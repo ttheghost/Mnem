@@ -8,3 +8,15 @@ pub type Db = Arc<Mutex<DbInner>>;
 pub struct DbInner {
     store: HashMap<String, Value>,
 }
+
+impl DbInner {
+    pub fn new() -> Self {
+        Self {
+            store: HashMap::new(),
+        }
+    }
+}
+
+pub fn new_db() -> Db {
+    Db::new(Mutex::new(DbInner::new()))
+}

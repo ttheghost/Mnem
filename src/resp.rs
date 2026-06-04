@@ -50,7 +50,7 @@ impl Resp {
             match value {
                 RespValue::String(s) => {
                     writer
-                        .write_all(format!("${};\r\n{}\r\n", s.len(), s).as_bytes())
+                        .write_all(format!("${}\r\n{}\r\n", s.len(), s).as_bytes())
                         .await?;
                 }
                 RespValue::NullString => {
