@@ -9,12 +9,14 @@ pub struct Ping {
 }
 
 impl Ping {
-    pub fn new(args: &Vec<String>) -> Ping {
-        if args.len() == 1 {
-            Ping { message: Some(args[0].clone()) }
+    pub fn try_new(args: &Vec<String>) -> Result<Ping, std::io::Error> {
+        Ok(if args.len() == 1 {
+            Ping {
+                message: Some(args[0].clone()),
+            }
         } else {
             Ping { message: None }
-        }
+        })
     }
 
     pub async fn execute(&self, client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
