@@ -21,7 +21,7 @@ impl Ping {
         if let Some(message) = &self.message {
             Resp::encode(RespValue::String(message.clone()), &mut client.socket).await?;
         } else {
-            Resp::encode(RespValue::String("PONG".into()), &mut client.socket).await?;
+            Resp::encode(RespValue::SimpleString("PONG".into()), &mut client.socket).await?;
         }
         Ok(())
     }
