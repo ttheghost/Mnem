@@ -22,8 +22,10 @@ impl Echo {
         }
     }
 
-    pub async fn execute(&self, client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
-        Resp::encode(RespValue::String(self.message.clone()), &mut client.socket).await?;
-        Ok(())
+    pub async fn execute(
+        &self,
+        client: &mut Client,
+    ) -> Result<RespValue, Box<dyn std::error::Error>> {
+        Ok(RespValue::String(self.message.clone()))
     }
 }

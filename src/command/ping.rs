@@ -19,12 +19,14 @@ impl Ping {
         })
     }
 
-    pub async fn execute(&self, client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
-        if let Some(message) = &self.message {
-            Resp::encode(RespValue::String(message.clone()), &mut client.socket).await?;
+    pub async fn execute(
+        &self,
+        client: &mut Client,
+    ) -> Result<RespValue, Box<dyn std::error::Error>> {
+        Ok(if let Some(message) = &self.message {
+            RespValue::String(message.clone())
         } else {
-            Resp::encode(RespValue::SimpleString("PONG".into()), &mut client.socket).await?;
-        }
-        Ok(())
+            RespValue::SimpleString("PONG".into())
+        })
     }
 }

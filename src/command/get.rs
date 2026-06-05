@@ -20,18 +20,20 @@ impl Get {
         }
     }
 
-    pub async fn execute(&self, client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn execute(
+        &self,
+        client: &mut Client,
+    ) -> Result<RespValue, Box<dyn std::error::Error>> {
         let val = {
             let db = client.db.lock().unwrap();
             db.get(self.key.as_str()).cloned()
         };
-        match val {
+        Ok(match val {
             Some(val) => match val {
-                Value::Int(i) => Resp::encode(RespValue::Integer(i), &mut client.socket).await?,
-                Value::String(s) => Resp::encode(RespValue::String(s), &mut client.socket).await?,
+                Value::Int(i) => RespValue::Integer(i),
+                Value::String(s) => RespValue::String(s),
             },
-            None => Resp::encode(RespValue::NullString, &mut client.socket).await?,
-        }
-        Ok(())
+            None => RespValue::NullString,
+        })
     }
 }

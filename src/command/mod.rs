@@ -1,15 +1,15 @@
 pub mod echo;
+pub mod get;
 pub mod ping;
 pub mod set;
-pub mod get;
 
 use crate::command::echo::Echo;
+use crate::command::get::Get;
 use crate::command::ping::Ping;
+use crate::command::set::Set;
 use crate::resp::RespValue;
 use crate::server::Client;
 use std::io::Error;
-use crate::command::get::Get;
-use crate::command::set::Set;
 
 #[derive(Debug)]
 pub struct Unknown {}
@@ -71,13 +71,16 @@ impl Command {
         }
     }
 
-    pub async fn execute(&self, client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn execute(
+        &self,
+        client: &mut Client,
+    ) -> Result<RespValue, Box<dyn std::error::Error>> {
         match self {
             Command::Ping(p) => p.execute(client).await,
             Command::Echo(e) => e.execute(client).await,
             Command::Set(e) => e.execute(client).await,
             Command::Get(e) => e.execute(client).await,
-            Command::Unknown(_) => Ok(()),
+            Command::Unknown(_) => Ok(RespValue::NullString),
         }
     }
 }

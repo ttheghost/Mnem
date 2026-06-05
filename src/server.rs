@@ -1,8 +1,8 @@
-use tokio::io::AsyncWriteExt;
+use crate::command::Command;
 use crate::db::Db;
 use crate::resp::{Resp, RespValue};
+use tokio::io::AsyncWriteExt;
 use tokio::net::{TcpListener, TcpStream};
-use crate::command::Command;
 
 #[derive(Debug)]
 struct Server {
@@ -53,7 +53,9 @@ impl Client {
                     println!("request: {:?}", request);
                     let cmd = Command::from_resp(request)?;
                     println!("command: {:?}", cmd);
-                    cmd.execute(self).await?;
+                    let response = cmd.execute(self).await?;
+                    println!("response: {:?}", response);
+                    Resp::encode(response, &mut self.socket).await?;
                     self.socket.flush().await?;
                 }
                 Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => {

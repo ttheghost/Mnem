@@ -22,12 +22,11 @@ impl Set {
         }
     }
 
-    pub async fn execute(&self, client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn execute(&self, client: &mut Client) -> Result<RespValue, Box<dyn std::error::Error>> {
         {
             let mut db = client.db.lock().unwrap();
             db.set(self.key.clone(), Value::String(self.value.clone()));
         }
-        Resp::encode(RespValue::SimpleString("OK".into()), &mut client.socket).await?;
-        Ok(())
+        Ok(RespValue::SimpleString("OK".into()))
     }
 }
