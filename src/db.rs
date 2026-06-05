@@ -15,6 +15,14 @@ impl DbInner {
             store: HashMap::new(),
         }
     }
+
+    pub fn set(&mut self, key: String, value: Value) {
+        self.store.insert(key, value);
+    }
+
+    pub fn get(&self, key: &str) -> Option<&Value> {
+        self.store.get(key)
+    }
 }
 
 pub fn new_db() -> Db {

@@ -1,11 +1,15 @@
 pub mod echo;
 pub mod ping;
+pub mod set;
+pub mod get;
 
 use crate::command::echo::Echo;
 use crate::command::ping::Ping;
 use crate::resp::RespValue;
 use crate::server::Client;
 use std::io::Error;
+use crate::command::get::Get;
+use crate::command::set::Set;
 
 #[derive(Debug)]
 pub struct Unknown {}
@@ -20,6 +24,8 @@ impl Unknown {
 pub enum Command {
     Ping(Ping),
     Echo(Echo),
+    Set(Set),
+    Get(Get),
     Unknown(Unknown),
 }
 
@@ -52,6 +58,8 @@ impl Command {
             let cmd = match command_keyword.as_str() {
                 "ping" => Command::Ping(Ping::try_new(&args)?),
                 "echo" => Command::Echo(Echo::try_new(&args)?),
+                "set" => Command::Set(Set::try_new(&args)?),
+                "get" => Command::Get(Get::try_new(&args)?),
                 _ => {
                     return Ok(Command::Unknown(Unknown::new(command_keyword, &args)));
                 }
@@ -67,6 +75,8 @@ impl Command {
         match self {
             Command::Ping(p) => p.execute(client).await,
             Command::Echo(e) => e.execute(client).await,
+            Command::Set(e) => e.execute(client).await,
+            Command::Get(e) => e.execute(client).await,
             Command::Unknown(_) => Ok(()),
         }
     }
