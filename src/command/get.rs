@@ -25,7 +25,7 @@ impl Get {
         client: &mut Client,
     ) -> Result<RespValue, Box<dyn std::error::Error>> {
         let val = {
-            let db = client.db.lock().unwrap();
+            let mut db = client.db.lock().unwrap();
             db.get(self.key.as_str()).cloned()
         };
         Ok(match val {
