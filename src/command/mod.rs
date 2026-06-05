@@ -2,11 +2,13 @@ pub mod echo;
 pub mod get;
 pub mod ping;
 pub mod set;
+pub mod type_;
 
 use crate::command::echo::Echo;
 use crate::command::get::Get;
 use crate::command::ping::Ping;
 use crate::command::set::Set;
+use crate::command::type_::Type;
 use crate::resp::RespValue;
 use crate::server::Client;
 use std::io::Error;
@@ -26,6 +28,7 @@ pub enum Command {
     Echo(Echo),
     Set(Set),
     Get(Get),
+    Type(Type),
     Unknown(Unknown),
 }
 
@@ -60,6 +63,7 @@ impl Command {
                 "echo" => Command::Echo(Echo::try_new(&args)?),
                 "set" => Command::Set(Set::try_new(&args)?),
                 "get" => Command::Get(Get::try_new(&args)?),
+                "type" => Command::Type(Type::try_new(&args)?),
                 _ => {
                     return Ok(Command::Unknown(Unknown::new(command_keyword, &args)));
                 }
@@ -80,6 +84,7 @@ impl Command {
             Command::Echo(e) => e.execute(client).await,
             Command::Set(e) => e.execute(client).await,
             Command::Get(e) => e.execute(client).await,
+            Command::Type(t) => t.execute(client).await,
             Command::Unknown(_) => Ok(RespValue::NullString),
         }
     }
