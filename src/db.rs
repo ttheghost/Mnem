@@ -1,14 +1,14 @@
 use crate::value::Value;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use std::time::SystemTime;
+use std::time::Instant;
 
 pub type Db = Arc<Mutex<DbInner>>;
 
 #[derive(Debug)]
 pub struct DbInner {
     store: HashMap<String, Value>,
-    expires: HashMap<String, SystemTime>,
+    expires: HashMap<String, Instant>,
 }
 
 impl DbInner {
@@ -19,7 +19,7 @@ impl DbInner {
         }
     }
 
-    pub fn set(&mut self, key: String, value: Value, expires: Option<SystemTime>) {
+    pub fn set(&mut self, key: String, value: Value, expires: Option<Instant>) {
         self.store.insert(key.clone(), value);
         if let Some(expires) = expires {
             self.expires.insert(key, expires);
@@ -28,7 +28,7 @@ impl DbInner {
 
     pub fn get(&mut self, key: &str) -> Option<&Value> {
         if let Some(expires) = self.expires.get(key) {
-            let now = SystemTime::now();
+            let now = Instant::now();
             if now > *expires {
                 self.store.remove(key);
                 self.expires.remove(key);

@@ -2,13 +2,13 @@ use crate::resp::RespValue;
 use crate::server::Client;
 use crate::value::Value;
 use std::ops::Add;
-use std::time::SystemTime;
+use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Set {
     key: String,
     value: String,
-    expire: Option<SystemTime>,
+    expire: Option<Instant>,
 }
 
 impl Set {
@@ -27,7 +27,7 @@ impl Set {
                 "EX" => {
                     if let Some(s) = args.get(3) {
                         if let Ok(n) = s.parse::<u64>() {
-                            let now = SystemTime::now();
+                            let now = Instant::now();
                             let expire_time = now.add(std::time::Duration::from_secs(n));
                             expire = Some(expire_time);
                         } else {
@@ -46,7 +46,7 @@ impl Set {
                 "PX" => {
                     if let Some(s) = args.get(3) {
                         if let Ok(n) = s.parse::<u64>() {
-                            let now = SystemTime::now();
+                            let now = Instant::now();
                             let expire_time = now.add(std::time::Duration::from_millis(n));
                             expire = Some(expire_time);
                         } else {
@@ -79,7 +79,11 @@ impl Set {
     ) -> Result<RespValue, Box<dyn std::error::Error>> {
         {
             let mut db = client.db.lock().unwrap();
-            db.set(self.key.clone(), Value::String(self.value.clone()), self.expire);
+            db.set(
+                self.key.clone(),
+                Value::String(self.value.clone()),
+                self.expire,
+            );
         }
         Ok(RespValue::SimpleString("OK".into()))
     }
